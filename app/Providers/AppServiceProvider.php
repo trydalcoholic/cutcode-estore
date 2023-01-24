@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use Carbon\CarbonInterval;
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         //
     }
@@ -31,6 +33,20 @@ class AppServiceProvider extends ServiceProvider
 
         DB::whenQueryingForLongerThan(5000, static function (Connection $connection) {
             Log::warning("Database queries exceeded 5 seconds on {$connection->getName()}");
+
+            logger()
+                ->channel('telegram')
+                ->debug('whenQueryingForLongerThan: ' . $connection->query()->toSql());
         });
+
+        $kernel = app(Kernel::class);
+        $kernel->whenRequestLifecycleIsLongerThan(
+            CarbonInterval::seconds(4),
+            static function () {
+                logger()
+                    ->channel('telegram')
+                    ->debug('whenQueryingForLongerThan: ' . request()->url());
+            }
+        );
     }
 }
