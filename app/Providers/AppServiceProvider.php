@@ -31,22 +31,32 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::shouldBeStrict(! app()->isProduction());
 
-        DB::whenQueryingForLongerThan(5000, static function (Connection $connection) {
-            Log::warning("Database queries exceeded 5 seconds on {$connection->getName()}");
+        if (app()->isProduction()) {
+            DB::whenQueryingForLongerThan(CarbonInterval::seconds(5), static function (Connection $connection) {
+                Log::warning("Database queries exceeded 5 seconds on {$connection->getName()}");
 
-            logger()
-                ->channel('telegram')
-                ->debug('whenQueryingForLongerThan: ' . $connection->query()->toSql());
-        });
-
-        $kernel = app(Kernel::class);
-        $kernel->whenRequestLifecycleIsLongerThan(
-            CarbonInterval::seconds(4),
-            static function () {
                 logger()
                     ->channel('telegram')
-                    ->debug('whenQueryingForLongerThan: ' . request()->url());
-            }
-        );
+                    ->debug('whenQueryingForLongerThan: ' . $connection->totalQueryDuration());
+            });
+
+            DB::listen(static function ($query) {
+                if ($query->time > 100) {
+                    logger()
+                        ->channel('telegram')
+                        ->debug('whenQueryingForLongerThan: ' . $query->sql, $query->bindings);
+                }
+            });
+
+            $kernel = app(Kernel::class);
+            $kernel->whenRequestLifecycleIsLongerThan(
+                CarbonInterval::seconds(4),
+                static function () {
+                    logger()
+                        ->channel('telegram')
+                        ->debug('whenQueryingForLongerThan: ' . request()->url());
+                }
+            );
+        }
     }
 }
