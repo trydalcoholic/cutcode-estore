@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Logging\Telegram;
 
+use App\Services\Telegram\Exceptions\TelegramBotApiException;
 use App\Services\Telegram\TelegramBotApi;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
@@ -23,6 +24,9 @@ final class TelegramLoggerHandler extends AbstractProcessingHandler
         $this->token = $config['token'];
     }
 
+    /**
+     * @throws TelegramBotApiException
+     */
     protected function write(array $record): void
     {
         TelegramBotApi::sendMessage(
