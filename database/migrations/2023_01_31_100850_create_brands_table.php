@@ -29,7 +29,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (app()->isLocal()) {
+        if (!app()->isProduction()) {
             Schema::dropIfExists('brands');
         }
     }
