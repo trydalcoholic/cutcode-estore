@@ -20,7 +20,7 @@ return new class extends Migration {
             $table->string('title');
             $table->string('thumbnail')->default('');
             $table->unsignedInteger('price')->default(0);
-            $table->string('slug');
+            $table->string('slug')->unique();
 
             $table->foreignIdFor(Brand::class)
                 ->nullable()
@@ -53,7 +53,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        if (app()->isLocal()) {
+        if (!app()->isProduction()) {
             Schema::dropIfExists('category_product');
             Schema::dropIfExists('products');
         }
