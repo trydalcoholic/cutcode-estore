@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ForgotPasswordFromRequest;
 use App\Http\Requests\ResetPasswordFromRequest;
-use App\Http\Requests\SignInFromRequest;
-use App\Http\Requests\SignUpFromRequest;
+use App\Http\Requests\SignInFormRequest;
+use App\Http\Requests\SignUpFormRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
@@ -23,9 +23,9 @@ class AuthController extends Controller
         return view('auth.sign-in');
     }
 
-    public function signIn(SignInFromRequest $request): RedirectResponse
+    public function signIn(SignInFormRequest $request): RedirectResponse
     {
-        if (!auth()->attempt($request->validated())) {
+        if (! auth()->attempt($request->validated())) {
             return back()->withErrors([
                 'email' => 'E-mail или пароль указаны неверно!',
             ])->onlyInput('email');
@@ -41,7 +41,7 @@ class AuthController extends Controller
         return view('auth.sign-up');
     }
 
-    public function store(SignUpFromRequest $request): RedirectResponse
+    public function store(SignUpFormRequest $request): RedirectResponse
     {
         $user = User::query()->create([
             'name' => $request->get('name'),
@@ -100,7 +100,7 @@ class AuthController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             static function ($user, $password) {
                 $user->forceFill([
-                    'password' => bcrypt($password)
+                    'password' => bcrypt($password),
                 ])->setRememberToken(str()->random(60));
 
                 $user->save();

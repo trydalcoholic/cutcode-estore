@@ -4,9 +4,12 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
+use Worksome\RequestFactories\Concerns\HasFactory;
 
-class SignUpFromRequest extends FormRequest
+class SignUpFormRequest extends FormRequest
 {
+    use HasFactory;
+
     public function authorize(): bool
     {
         return auth()->guest();
@@ -27,7 +30,7 @@ class SignUpFromRequest extends FormRequest
             'email' => str(request('email'))
                 ->squish()
                 ->lower()
-                ->value()
+                ->value(),
         ]);
     }
 }
