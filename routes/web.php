@@ -17,10 +17,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(static function () {
     Route::get('/login', 'index')->name('login');
-    Route::post('/login', 'signIn')->name('sign-in');
+    Route::post('/login', 'signIn')
+        ->middleware('throttle:auth')
+        ->name('sign-in');
 
     Route::get('/sign-up', 'signUp')->name('sign-up');
-    Route::post('/sign-up', 'store')->name('store');
+    Route::post('/sign-up', 'store')
+        ->middleware('throttle:auth')
+        ->name('store');
 
     Route::delete('/logout', 'logout')->name('logout');
 
