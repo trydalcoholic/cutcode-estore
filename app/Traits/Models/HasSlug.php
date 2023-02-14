@@ -19,12 +19,12 @@ trait HasSlug
     {
         if (!$this->{$this->slugColumn()}) {
             $slug = $this->slugUnique(
-                str($this->{$this->slugForm})
+                str($this->{$this->slugFrom()})
                     ->slug()
                     ->value()
             );
 
-            $this->{$this->slugColumn()} = $this->{$this->slugColumn} ?? $slug;
+            $this->{$this->slugColumn()} = $slug;
         }
     }
 
@@ -33,7 +33,7 @@ trait HasSlug
         return 'slug';
     }
 
-    protected static function slugFrom(): string
+    protected function slugFrom(): string
     {
         return 'title';
     }
@@ -55,7 +55,7 @@ trait HasSlug
     private function isSlugExists(string $slug): bool
     {
         $query = $this->newQuery()
-            ->where(self::slugColumn(), $slug)
+            ->where($this->slugColumn(), $slug)
             ->where($this->getkeyName(), '!=', $this->getKey())
             ->withoutGlobalScopes();
 
