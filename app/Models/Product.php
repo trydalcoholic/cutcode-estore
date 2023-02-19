@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use PhpParser\Builder;
 
 class Product extends Model
 {
@@ -19,7 +20,16 @@ class Product extends Model
         'price',
         'brand_id',
         'slug',
+        'on_home_page',
+        'sorting',
     ];
+
+    public function scopeHomePage(Builder $query): void
+    {
+        $query->where('on_home_page', true)
+            ->orderBy('sorting')
+            ->limit(6);
+    }
 
     public function brand(): BelongsTo
     {
