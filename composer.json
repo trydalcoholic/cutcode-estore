@@ -9,6 +9,7 @@
         "guzzlehttp/guzzle": "^7.5.0",
         "laravel/framework": "^9.50.2",
         "laravel/sanctum": "^3.2.1",
+        "laravel/socialite": "^5.6",
         "laravel/tinker": "^2.8.0",
         "sentry/sentry-laravel": "^3.2.0"
     },
@@ -21,14 +22,21 @@
         "mockery/mockery": "^1.5.1",
         "nunomaduro/collision": "^6.4.0",
         "phpunit/phpunit": "^9.6.3",
-        "spatie/laravel-ignition": "^1.6.4"
+        "spatie/laravel-ignition": "^1.6.4",
+        "worksome/request-factories": "^2.5"
     },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
-        }
+            "Database\\Seeders\\": "database/seeders/",
+            "Domain\\": "src/Domain/",
+            "Services\\": "src/Services/",
+            "Support\\": "src/Support/"
+        },
+        "files": [
+            "src/Support/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

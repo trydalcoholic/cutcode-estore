@@ -15,7 +15,7 @@ return new class extends Migration
     public function down(): void
     {
         if (!app()->isProduction()) {
-            Schema::table('{{ table }}', function (Blueprint $table) {
+            Schema::table('{{ table }}', static function (Blueprint $table) {
             });
         }
     }
