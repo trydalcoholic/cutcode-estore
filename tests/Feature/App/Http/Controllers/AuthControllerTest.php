@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature\App\Http\Controllers;
 
-use App\Http\Controllers\AuthController;
-use App\Http\Requests\SignInFormRequest;
-use App\Http\Requests\SignUpFormRequest;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Requests\LoginFormRequest;
+use App\Http\Requests\RegisterFormRequest;
 use App\Listeners\SendEmailNewUserListener;
-use App\Models\User;
 use App\Notifications\NewUserNotification;
+use Database\Factories\UserFactory;
+use Domain\Auth\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -27,10 +30,10 @@ class AuthControllerTest extends TestCase
      */
     public function it_login_page_success(): void
     {
-        $this->get(action([AuthController::class, 'index']))
+        $this->get(action([LoginController::class, 'page']))
             ->assertOk()
             ->assertSee('Вход в аккаунт')
-            ->assertViewIs('auth.sign-in');
+            ->assertViewIs('auth.login');
     }
 
     /**
@@ -38,12 +41,12 @@ class AuthControllerTest extends TestCase
      *
      * @return void
      */
-    public function it_sign_up_page_success(): void
+    public function it_register_page_success(): void
     {
-        $this->get(action([AuthController::class, 'signUp']))
+        $this->get(action([RegisterController::class, 'page']))
             ->assertOk()
             ->assertSee('Регистрация')
-            ->assertViewIs('auth.sign-up');
+            ->assertViewIs('auth.register');
     }
 
     /**
@@ -51,22 +54,35 @@ class AuthControllerTest extends TestCase
      *
      * @return void
      */
-    public function it_sign_in_success(): void
+    public function it_forgot_page_success(): void
+    {
+        $this->get(action([ForgotPasswordController::class, 'page']))
+            ->assertOk()
+            ->assertSee('Забыли пароль')
+            ->assertViewIs('auth.forgot-password');
+    }
+
+    /**
+     * @test
+     *
+     * @return void
+     */
+    public function it_login_success(): void
     {
         $password = '1234567890';
 
-        $user = User::factory()->create([
+        $user = UserFactory::new()->create([
             'email' => 'test@ya.ru',
             'password' => bcrypt($password),
         ]);
 
-        $request = SignInFormRequest::factory()->create([
+        $request = LoginFormRequest::factory()->create([
             'email' => $user->email,
             'password' => $password,
         ]);
 
         $response = $this->post(
-            action([AuthController::class, 'signIn']),
+            action([LoginController::class, 'handle']),
             $request,
         );
 
@@ -83,12 +99,12 @@ class AuthControllerTest extends TestCase
      */
     public function it_logout_success(): void
     {
-        $user = User::factory()->create([
+        $user = UserFactory::new()->create([
             'email' => 'test@ya.ru',
         ]);
 
         $this->actingAs($user)
-            ->delete(action([AuthController::class, 'logout']));
+            ->delete(action([LoginController::class, 'logout']));
 
         $this->assertGuest();
     }
@@ -98,25 +114,12 @@ class AuthControllerTest extends TestCase
      *
      * @return void
      */
-    public function it_forgot_page_success(): void
-    {
-        $this->get(action([AuthController::class, 'forgot']))
-            ->assertOk()
-            ->assertSee('Забыли пароль')
-            ->assertViewIs('auth.forgot-password');
-    }
-
-    /**
-     * @test
-     *
-     * @return void
-     */
-    public function is_store_success(): void
+    public function is_register_success(): void
     {
         Notification::fake();
         Event::fake();
 
-        $request = SignUpFormRequest::factory()->create([
+        $request = RegisterFormRequest::factory()->create([
             'email' => 'test@ya.ru',
             'password' => '12345678',
             'password_confirmation' => '12345678',
@@ -127,7 +130,7 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response = $this->post(
-            action([AuthController::class, 'store']),
+            action([RegisterController::class, 'handle']),
             $request,
         );
 
