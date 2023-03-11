@@ -7,7 +7,7 @@ namespace Domain\Auth\Providers;
 // use Illuminate\Support\Facades\Gate;
 use Domain\Auth\Actions\RegisterNewUserAction;
 use Domain\Auth\Contracts\RegisterNewUserContract;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\ServiceProvider;
 
 final class ActionsServiceProvider extends ServiceProvider
 {
