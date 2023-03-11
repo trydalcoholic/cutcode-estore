@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Support\Casts\PriceCast;
 use Support\Traits\Models\HasImage;
 use Support\Traits\Models\HasSlug;
 
@@ -17,11 +18,6 @@ class Product extends Model
     use HasFactory;
     use HasSlug;
     use HasImage;
-
-    protected function imageDir(): string
-    {
-        return 'products';
-    }
 
     protected $fillable = [
         'title',
@@ -32,6 +28,15 @@ class Product extends Model
         'on_home_page',
         'sorting',
     ];
+
+    protected $casts = [
+        'price' => PriceCast::class,
+    ];
+
+    protected function imageDir(): string
+    {
+        return 'products';
+    }
 
     public function scopeHomePage(Builder $query): void
     {
