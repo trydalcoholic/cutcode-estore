@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use App\Traits\Models\HasImage;
-use App\Traits\Models\HasSlug;
+use Domain\Catalog\Models\Brand;
+use Domain\Catalog\Models\Category;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Support\Traits\Models\HasImage;
+use Support\Traits\Models\HasSlug;
 
 class Product extends Model
 {

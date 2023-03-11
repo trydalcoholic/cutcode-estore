@@ -1,13 +1,14 @@
 <?php
 
-use App\Models\Brand;
-use App\Models\Category;
 use App\Models\Product;
+use Domain\Catalog\Models\Brand;
+use Domain\Catalog\Models\Category;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      *
@@ -53,7 +54,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        if (!app()->isProduction()) {
+        if (! app()->isProduction()) {
             Schema::dropIfExists('category_product');
             Schema::dropIfExists('products');
         }
